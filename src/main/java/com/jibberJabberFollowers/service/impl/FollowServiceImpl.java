@@ -35,14 +35,14 @@ public class FollowServiceImpl implements FollowService {
     @Override
     public Page<FollowDto> getFollowers(UUID userId, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<Follow> follows = followRepository.findByFollowedById(userId, pageable);
+        Page<Follow> follows = followRepository.findByFollowingId(userId, pageable);
         return follows.map(FollowDto::from);
     }
 
     @Override
     public Page<FollowDto> getFollowing(UUID userId, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<Follow> follows = followRepository.findByFollowingId(userId, pageable);
+        Page<Follow> follows = followRepository.findByFollowedById(userId, pageable);
         return follows.map(FollowDto::from);
     }
 
