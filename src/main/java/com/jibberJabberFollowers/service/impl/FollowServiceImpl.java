@@ -10,13 +10,14 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.UUID;
+import java.util.logging.Logger;
 
 @Service
 public class FollowServiceImpl implements FollowService {
 
     private final FollowRepository followRepository;
+    private final Logger logger = Logger.getLogger(FollowServiceImpl.class.getName());
 
     public FollowServiceImpl(FollowRepository followRepository) {
         this.followRepository = followRepository;
@@ -28,7 +29,9 @@ public class FollowServiceImpl implements FollowService {
                 .followedById(followCreatorDto.getFollowerId())
                 .followingId(followCreatorDto.getFollowingId())
                 .build();
+        logger.info("New Follow Started");
         follow = followRepository.save(follow);
+        logger.info("User " + follow.getFollowedById() + " is now following " + follow.getFollowingId());
         return FollowDto.from(follow);
     }
 
@@ -48,7 +51,9 @@ public class FollowServiceImpl implements FollowService {
 
     @Override
     public void unfollow(UUID userId, UUID followingId) {
+        logger.info("New Unfollow Started");
         Follow follow = followRepository.findByFollowedByIdAndFollowingId(userId, followingId).orElseThrow(() -> new IllegalArgumentException("No follow found"));
         followRepository.delete(follow);
+        logger.info("User " + userId + " is no longer following " + followingId);
     }
 }
