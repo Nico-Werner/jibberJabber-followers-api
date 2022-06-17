@@ -1,13 +1,16 @@
 package com.jibberJabberFollowers.service.impl;
 
-import com.jibberJabberFollowers.dto.FollowCreatorDto;
 import com.jibberJabberFollowers.dto.FollowDto;
 import com.jibberJabberFollowers.model.Follow;
 import com.jibberJabberFollowers.repository.FollowRepository;
 import com.jibberJabberFollowers.service.FollowService;
+import org.keycloak.KeycloakPrincipal;
+import org.keycloak.KeycloakSecurityContext;
+import org.keycloak.representations.AccessToken;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -24,15 +27,22 @@ public class FollowServiceImpl implements FollowService {
     }
 
     @Override
-    public FollowDto follow(FollowCreatorDto followCreatorDto) {
+    public FollowDto follow(UUID userId) {
         Follow follow = Follow.builder()
-                .followedById(followCreatorDto.getFollowerId())
-                .followingId(followCreatorDto.getFollowingId())
+                .followedById(getUserData())
+                .followingId(userId)
                 .build();
         logger.info("New Follow Started");
         follow = followRepository.save(follow);
         logger.info("User " + follow.getFollowedById() + " is now following " + follow.getFollowingId());
         return FollowDto.from(follow);
+    }
+
+    private UUID getUserData() {
+        KeycloakPrincipal principal = (KeycloakPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        KeycloakSecurityContext context = (KeycloakSecurityContext) principal.getKeycloakSecurityContext();
+        AccessToken token = context.getToken();
+        return UUID.fromString(token.getPreferredUsername());
     }
 
     @Override

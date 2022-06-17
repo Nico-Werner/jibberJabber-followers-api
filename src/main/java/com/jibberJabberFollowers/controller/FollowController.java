@@ -19,26 +19,26 @@ public class FollowController {
         this.followService = followService;
     }
 
-    @PostMapping("")
-    public FollowDto follow(@RequestBody FollowCreatorDto followCreatorDto) {
-        return followService.follow(followCreatorDto);
+    @PostMapping("/{followId}")
+    public FollowDto follow(@Valid @PathVariable("followId") UUID userId) {
+        return followService.follow(userId);
     }
 
-    @GetMapping("followers/{userId}")
+    @GetMapping("/followers/{userId}")
     public Page<FollowDto> getFollowers(@Valid @PathVariable UUID userId,
                                         @RequestParam(defaultValue = "0") int page,
                                         @RequestParam(defaultValue = "10") int size) {
         return followService.getFollowers(userId, page, size);
     }
 
-    @GetMapping("following/{userId}")
+    @GetMapping("/following/{userId}")
     public Page<FollowDto> getFollowing(@Valid @PathVariable UUID userId,
                                         @RequestParam(defaultValue = "0") int page,
                                         @RequestParam(defaultValue = "10") int size) {
         return followService.getFollowing(userId, page, size);
     }
 
-    @DeleteMapping("user/{userId}/unfollow/{followingId}")
+    @DeleteMapping("/user/{userId}/unfollow/{followingId}")
     public void unfollow(@Valid @PathVariable UUID userId, @Valid @PathVariable UUID followingId) {
         followService.unfollow(userId, followingId);
     }

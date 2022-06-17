@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.UUID;
 
 public interface FollowService {
-    FollowDto follow(FollowCreatorDto followCreatorDto);
+    FollowDto follow(UUID userId);
 
     Page<FollowDto> getFollowers(UUID userId, int page, int size);
 
