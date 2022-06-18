@@ -42,7 +42,7 @@ public class FollowServiceImpl implements FollowService {
         KeycloakPrincipal principal = (KeycloakPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         KeycloakSecurityContext context = (KeycloakSecurityContext) principal.getKeycloakSecurityContext();
         AccessToken token = context.getToken();
-        return UUID.fromString(token.getPreferredUsername());
+        return UUID.fromString(token.getId());
     }
 
     @Override
