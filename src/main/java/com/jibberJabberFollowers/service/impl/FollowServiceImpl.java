@@ -27,22 +27,27 @@ public class FollowServiceImpl implements FollowService {
     }
 
     @Override
-    public FollowDto follow(UUID userId) {
-        Follow follow = Follow.builder()
-                .followedById(getUserData())
-                .followingId(userId)
-                .build();
-        logger.info("New Follow Started");
-        follow = followRepository.save(follow);
-        logger.info("User " + follow.getFollowedById() + " is now following " + follow.getFollowingId());
-        return FollowDto.from(follow);
+    public void follow(UUID userId) {
+        Follow follow = followRepository.findByFollowerUserNameAndFollowingId(getUserData(), userId);
+        if(follow != null) {
+            followRepository.delete(follow);
+            logger.info("User " + getUserData() + " unfollowed user " + userId);
+        } else {
+            follow = Follow.builder()
+                    .followerUserName(getUserData())
+                    .followingId(userId)
+                    .build();
+            logger.info("New Follow Started");
+            follow = followRepository.save(follow);
+            logger.info("User " + follow.getFollowerUserName() + " is now following " + follow.getFollowingId());
+        }
     }
 
-    private UUID getUserData() {
+    private String getUserData() {
         KeycloakPrincipal principal = (KeycloakPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         KeycloakSecurityContext context = (KeycloakSecurityContext) principal.getKeycloakSecurityContext();
         AccessToken token = context.getToken();
-        return UUID.fromString(token.getId());
+        return token.getPreferredUsername();
     }
 
     @Override
@@ -55,15 +60,21 @@ public class FollowServiceImpl implements FollowService {
     @Override
     public Page<FollowDto> getFollowing(UUID userId, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<Follow> follows = followRepository.findByFollowedById(userId, pageable);
+        Page<Follow> follows = followRepository.findByFollowingId(userId, pageable);
         return follows.map(FollowDto::from);
     }
 
     @Override
     public void unfollow(UUID userId, UUID followingId) {
         logger.info("New Unfollow Started");
-        Follow follow = followRepository.findByFollowedByIdAndFollowingId(userId, followingId).orElseThrow(() -> new IllegalArgumentException("No follow found"));
+        Follow follow = followRepository.findByFollowerIdAndFollowingId(userId, followingId).orElseThrow(() -> new IllegalArgumentException("No follow found"));
         followRepository.delete(follow);
         logger.info("User " + userId + " is no longer following " + followingId);
     }
+
+    @Override
+    public boolean isFollowed(UUID userId) {
+        return followRepository.findByFollowerUserNameAndFollowingId(getUserData(), userId) != null;
+    }
+
 }

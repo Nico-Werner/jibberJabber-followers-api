@@ -20,8 +20,8 @@ public class FollowController {
     }
 
     @PostMapping("/{followId}")
-    public FollowDto follow(@Valid @PathVariable("followId") UUID userId) {
-        return followService.follow(userId);
+    public void follow(@Valid @PathVariable("followId") UUID userId) {
+        followService.follow(userId);
     }
 
     @GetMapping("/followers/{userId}")
@@ -41,5 +41,10 @@ public class FollowController {
     @DeleteMapping("/user/{userId}/unfollow/{followingId}")
     public void unfollow(@Valid @PathVariable UUID userId, @Valid @PathVariable UUID followingId) {
         followService.unfollow(userId, followingId);
+    }
+
+    @GetMapping("/isFollowed/{userId}")
+    public boolean isFollowed(@PathVariable UUID userId) {
+        return followService.isFollowed(userId);
     }
 }

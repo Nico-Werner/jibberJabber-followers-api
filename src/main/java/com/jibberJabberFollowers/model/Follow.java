@@ -21,8 +21,10 @@ public class Follow {
     @GeneratedValue
     private UUID id;
 
-    private UUID followedById;
+    private String followerUserName;
 
     private UUID followingId;
+
+    private UUID followerId;
 
 }

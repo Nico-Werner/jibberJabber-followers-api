@@ -10,9 +10,9 @@ import java.util.UUID;
 
 public interface FollowRepository extends JpaRepository<Follow, UUID> {
 
-    Page<Follow> findByFollowedById(UUID userId, Pageable pageable);
+    Follow findByFollowerUserNameAndFollowingId(String username, UUID userId);
 
     Page<Follow> findByFollowingId(UUID userId, Pageable pageable);
 
-    Optional<Follow> findByFollowedByIdAndFollowingId(UUID userId, UUID followingId);
+    Optional<Follow> findByFollowerIdAndFollowingId(UUID userId, UUID followingId);
 }

@@ -12,14 +12,14 @@ public class FollowDto {
 
     private UUID id;
 
-    private UUID followerId;
+    private String followerId;
 
     private UUID followingId;
 
     public static FollowDto from(Follow follow) {
         return FollowDto.builder()
                 .id(follow.getId())
-                .followerId(follow.getFollowedById())
+                .followerId(follow.getFollowerUserName())
                 .followingId(follow.getFollowingId())
                 .build();
     }
